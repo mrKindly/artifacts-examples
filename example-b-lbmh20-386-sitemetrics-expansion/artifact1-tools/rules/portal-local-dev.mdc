@@ -1,0 +1,14 @@
+---
+description: How to build, run and verify the Portal locally when editing API or Web source (port 5000, SPA build first, no Docker Compose).
+globs: Api/**/*.cs,Api/Properties/launchSettings.json,Web/src/**/*.ts,Web/src/**/*.tsx,Web/vite.config.ts,Web/package.json
+alwaysApply: false
+---
+# Portal local development
+
+- Run the Portal with `dotnet run --project Api --launch-profile http`; the app is at `http://localhost:5000`.
+- Build the SPA before expecting UI changes: `cd Web && npm run build` (output is `Api/wwwroot`). Re-run it after every Web change; the API does not hot-reload the SPA.
+- Do not use Docker Compose locally. It is CI/prod scaffolding and will not match the local Okta and SQL setup (`127.0.0.1,1434` / `127.0.0.1,1435`).
+- Quick compile check after C# edits: `dotnet build Api -c Debug`. Warning count must not grow.
+- `cd Web && npm run test:ci` exits 1 on `main` (pre-existing). Do not "fix" unrelated failures; run the scoped test files instead.
+- Never hard-code connection strings or Okta values; they come from user secrets / environment variables.
+- Database columns are discovered, not guessed. For `SpruceMetrics` use the `mssql-readonly` MCP before writing a mapper.

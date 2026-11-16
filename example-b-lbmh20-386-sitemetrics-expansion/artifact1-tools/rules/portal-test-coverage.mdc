@@ -1,0 +1,17 @@
+---
+description: Test naming, scoped-run-first workflow and the coverage/warnings bar for new or changed Portal code (.NET and Web tests).
+globs: "**/*Tests*/**/*.cs,Web/src/**/*.test.ts,Web/src/**/*.test.tsx"
+alwaysApply: false
+---
+# Portal tests and coverage
+
+- Target: line coverage on **new/changed code >= 90%** and **zero new warnings** (`dotnet build`, `tsc`, ESLint). Whole-solution coverage is not the target; QualityCheck 445 baseline is 87.72% and is not yours to fix in a story PR.
+- Write the failing test first, then the code (TDD). One behaviour per test.
+- .NET names: `<Unit>_Should<Expected>_When<Condition>`, e.g. `SiteMetricsMapper_ShouldReturnEmptyGroups_WhenRowIsMissing`. Use `[Theory]` for value tables (e.g. sentinel dates), not copy-pasted facts.
+- Web names: `describe('<Component or function>')` and `it('renders ...' | 'returns ...')`, files next to the source as `<name>.test.ts(x)`.
+- Cover the four edge classes for any mapping: happy path, disabled/false, empty/null, not-found.
+- Run scoped first, wider later:
+  - `dotnet test Api.Tests --filter "FullyQualifiedName~<Feature>"` (same for `Data.Tests`)
+  - `cd Web && npx vitest run src/features/<feature>`
+  - Coverage: add `--collect:"XPlat Code Coverage"` (.NET) or `--coverage` (Vitest); compute changed-code coverage from the diff, not the whole report.
+- Do not delete or loosen existing tests to get green. Do not add snapshot tests for data-driven cards; assert visible text and roles.

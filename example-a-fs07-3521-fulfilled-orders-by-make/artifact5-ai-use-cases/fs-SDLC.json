@@ -1,0 +1,386 @@
+{
+  "name": "FS.OnPrem.Soap + FS.Cloud.Router SDLC",
+  "note": "Demo example: synthetic measurements, modeled on the FS07-3521 integration story shape. Value stream map of the feedback path for an integration ticket (SOAP service plus cloud router). LOCK: numbers here = findings and use cases in artifact5-main.md. Metrics window 2026-09-14 to 2026-10-14 (~30 d). Metrics without a value are 'not measured' and must never be guessed.",
+  "details": {
+    "generalInformation": {
+      "repositories": [
+        "FS.OnPrem.Soap",
+        "FS.Cloud.Router"
+      ],
+      "adoProject": "FS07",
+      "adoOrganization": "ECI-FS",
+      "defaultBranch": "main",
+      "metricsWindow": "2026-09-14 to 2026-10-14 (~30d)",
+      "metricsSource": [
+        "ADO completed PRs to main in window (FS.OnPrem.Soap n=17)",
+        "ADO PR validation and post-merge pipeline runs (n=17 and n=24)",
+        "tSQLt runs on FsCore_QA (n=20)",
+        "Router pipeline runs and router PR review comments (n=12)",
+        "Last 10 release notes reviewed for a rollback section",
+        "Epic FS07-3442 ticket history (last 5 integration tickets)",
+        "Local timing sample of 20 runs on two developer machines"
+      ],
+      "metricsSummary": {
+        "pullRequestsToMain": {
+          "sampleSize": 17,
+          "medianTimeToFirstReviewDecisionSec": 79200,
+          "prsWithTwoOrMoreReviewRounds": 9,
+          "prValidationBuildFailures": 2
+        },
+        "integrationQaTsqlt": {
+          "runs": 20,
+          "failed": 7,
+          "failRatePercent": 35,
+          "medianDurationSec": 840,
+          "dominantFailureMode": "fixture collisions on shared FsCore_QA (missing tsqlt_ prefix)"
+        },
+        "routerPullRequests": {
+          "sampleSize": 12,
+          "withContractDriftComment": 4
+        },
+        "releases": {
+          "sampleSize": 10,
+          "withoutRollbackSection": 6
+        },
+        "specRework": {
+          "integrationTicketsSampled": 5,
+          "withSecondSpecRound": 3
+        }
+      }
+    },
+    "technologies": {
+      "custom": [
+        ".NET Framework 4.8 WCF SOAP service (IIS)",
+        "SQL Server 2019 (FsCore), stored procedures only",
+        "ASP.NET Core 8 cloud router with OpenAPI",
+        "Azure DevOps Pipelines",
+        "NUnit, tSQLt, xUnit"
+      ]
+    },
+    "tools": {
+      "custom": [
+        "Cursor rules, AGENTS.md, add-soap-operation skill",
+        "spec-reviewer subagent (read-only)",
+        "Atlassian MCP (read-only, project FS07)",
+        "msbuild, vstest.console, run-tsqlt.ps1"
+      ]
+    }
+  },
+  "states": [
+    {
+      "name": "State#0",
+      "activities": [],
+      "details": {
+        "custom": []
+      },
+      "transitions": [],
+      "metrics": {}
+    },
+    {
+      "name": "Developer's laptop",
+      "activities": [
+        {
+          "name": "Story analysis / spec for integration tickets",
+          "negativeFeedbackFrequency": "60",
+          "note": "3 of the last 5 integration tickets under epic FS07-3442 needed a second spec round after a PM walkthrough (epic history review 2026-10-14). Processing time: not measured.",
+          "precision": "40",
+          "processingTime": "",
+          "details": {
+            "custom": []
+          },
+          "flagged": true
+        },
+        {
+          "name": "Local coding / implementation",
+          "negativeFeedbackFrequency": "",
+          "note": "Processing time: not measured.",
+          "precision": "",
+          "processingTime": "",
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        },
+        {
+          "name": "msbuild Debug + scoped NUnit",
+          "negativeFeedbackFrequency": "5",
+          "note": "Sample of 20 local runs, median 190 s (3.2 min). 1 of 20 failed.",
+          "precision": "90",
+          "processingTime": 190,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        },
+        {
+          "name": "tSQLt on local FsCore_Dev",
+          "negativeFeedbackFrequency": "10",
+          "note": "Sample of 20 local runs, median 420 s (7 min). 2 of 20 failed (stale local database copy).",
+          "precision": "80",
+          "processingTime": 420,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [
+        {
+          "to": "PR",
+          "trigger": "On-demand",
+          "guard": "Pull request opened targeting main",
+          "details": {
+            "custom": []
+          }
+        }
+      ],
+      "metrics": {
+        "totalProcessingTime": 610,
+        "negativeFeedbackFrequency": ""
+      },
+      "note": "Inner loop ~10 min for build + scoped NUnit + local tSQLt. Time spent on story analysis and coding is not measured."
+    },
+    {
+      "name": "PR",
+      "activities": [
+        {
+          "name": "Code review (human)",
+          "negativeFeedbackFrequency": "53",
+          "note": "Median time to first review decision 22 h (79,200 s), n=17 completed PRs in window. 9 of 17 PRs (53%) needed two or more review rounds.",
+          "precision": "70",
+          "processingTime": 79200,
+          "details": {
+            "custom": []
+          },
+          "flagged": true
+        },
+        {
+          "name": "PR validation build (build + NUnit + WSDL snapshot)",
+          "negativeFeedbackFrequency": "12",
+          "note": "Median 540 s (9 min). 2 of 17 PR builds failed (12%).",
+          "precision": "95",
+          "processingTime": 540,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        },
+        {
+          "name": "Optional agent pre-review",
+          "negativeFeedbackFrequency": "",
+          "note": "Not in use. Not measured.",
+          "precision": "",
+          "processingTime": "",
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [
+        {
+          "to": "main branch",
+          "trigger": "automated",
+          "guard": "PR completed (merged) into main",
+          "details": {
+            "custom": []
+          }
+        }
+      ],
+      "metrics": {
+        "totalProcessingTime": 79740,
+        "negativeFeedbackFrequency": "53"
+      },
+      "note": "Branch policy: one reviewer and a green PR validation build."
+    },
+    {
+      "name": "main branch",
+      "activities": [
+        {
+          "name": "Post-merge CI (build + pack)",
+          "negativeFeedbackFrequency": "4",
+          "note": "Median 600 s (10 min). 1 of 24 runs failed (4%). Healthy: leave alone.",
+          "precision": "95",
+          "processingTime": 600,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [
+        {
+          "to": "Integration QA",
+          "trigger": "automated",
+          "guard": "Package published to the internal feed",
+          "details": {
+            "custom": []
+          }
+        }
+      ],
+      "metrics": {
+        "totalProcessingTime": 600,
+        "negativeFeedbackFrequency": "4"
+      },
+      "note": "Source of truth for deployable packages."
+    },
+    {
+      "name": "Integration QA",
+      "activities": [
+        {
+          "name": "tSQLt suite on shared FsCore_QA",
+          "negativeFeedbackFrequency": "35",
+          "note": "7 of 20 runs failed (35%), median 840 s (14 min). Dominant failure mode: fixtures written without the tsqlt_ prefix collide with a concurrent run on the shared database. Re-run usually passes.",
+          "precision": "60",
+          "processingTime": 840,
+          "details": {
+            "custom": []
+          },
+          "flagged": true
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [
+        {
+          "to": "Cloud router pipeline",
+          "trigger": "Manual",
+          "guard": "On-prem build is deployed to Dev; the router owner starts the router pipeline",
+          "details": {
+            "custom": []
+          }
+        }
+      ],
+      "metrics": {
+        "totalProcessingTime": 840,
+        "negativeFeedbackFrequency": "35"
+      },
+      "note": "One shared QA database for all branches."
+    },
+    {
+      "name": "Cloud router pipeline",
+      "activities": [
+        {
+          "name": "Router build + OpenAPI generation",
+          "negativeFeedbackFrequency": "8",
+          "note": "Median 420 s (7 min). 1 of 12 router runs failed (8%).",
+          "precision": "90",
+          "processingTime": 420,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        },
+        {
+          "name": "Contract drift / Swagger completeness review (manual)",
+          "negativeFeedbackFrequency": "33",
+          "note": "Reviewer compares the WSDL snapshot with the OpenAPI document by hand, median 1,500 s (25 min). 4 of 12 router PRs (33%) received a contract-drift review comment.",
+          "precision": "60",
+          "processingTime": 1500,
+          "details": {
+            "custom": []
+          },
+          "flagged": true
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [
+        {
+          "to": "Staging",
+          "trigger": "automated",
+          "guard": "Router PR merged and router build green",
+          "details": {
+            "custom": []
+          }
+        }
+      ],
+      "metrics": {
+        "totalProcessingTime": 1920,
+        "negativeFeedbackFrequency": "33"
+      },
+      "note": "Route registered per consumer; OpenAPI generated from route metadata."
+    },
+    {
+      "name": "Staging",
+      "activities": [
+        {
+          "name": "Consumer smoke test (manual)",
+          "negativeFeedbackFrequency": "10",
+          "note": "Median 1,800 s (30 min), run by the consumer owner. 1 of 10 smoke tests found a defect.",
+          "precision": "85",
+          "processingTime": 1800,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [
+        {
+          "to": "Production",
+          "trigger": "Manual",
+          "guard": "Consumer owner confirms the smoke test",
+          "details": {
+            "custom": []
+          }
+        }
+      ],
+      "metrics": {
+        "totalProcessingTime": 1800,
+        "negativeFeedbackFrequency": "10"
+      },
+      "note": "Staging mirrors Production configuration except data volume."
+    },
+    {
+      "name": "Production",
+      "activities": [
+        {
+          "name": "Release notes and rollback section authoring (manual)",
+          "negativeFeedbackFrequency": "60",
+          "note": "Median 1,800 s (30 min). 6 of the last 10 releases (60%) shipped without a rollback section in the release notes.",
+          "precision": "50",
+          "processingTime": 1800,
+          "details": {
+            "custom": []
+          },
+          "flagged": true
+        },
+        {
+          "name": "Deploy on-prem service, then router",
+          "negativeFeedbackFrequency": "5",
+          "note": "Median 780 s (13 min). 1 of 20 deploys failed and was re-run (5%).",
+          "precision": "95",
+          "processingTime": 780,
+          "details": {
+            "custom": []
+          },
+          "flagged": ""
+        }
+      ],
+      "details": {
+        "custom": []
+      },
+      "transitions": [],
+      "metrics": {
+        "totalProcessingTime": 2580,
+        "negativeFeedbackFrequency": "60"
+      },
+      "note": "Production deploys are manual per component. Rollback is configuration-first (route switch)."
+    }
+  ]
+}

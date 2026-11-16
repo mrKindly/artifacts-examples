@@ -1,0 +1,16 @@
+---
+description: SQL Server conventions for procs, functions and tSQLt tests in the FsCore database
+globs: db/**/*.sql
+alwaysApply: false
+---
+
+# SQL Server conventions (FsCore)
+
+- Target is SQL Server 2019. There is no `REGEXP`, `RLIKE` or `REGEX_LIKE`. For whole-word matching call `dbo.fn_ContainsWholeWord(@text, @word)`; do not hand-roll `LIKE '%word%'`, which matches substrings.
+- Check column names against `INFORMATION_SCHEMA.COLUMNS` or `db/migrations/` before using them.
+- Name list columns explicitly. No `SELECT *` in procs.
+- Store and compare instants as `datetime2` in UTC. Never use `GETDATE()`; use `SYSUTCDATETIME()`.
+- Procs are read-only unless the ticket says otherwise: no `INSERT`, `UPDATE`, `DELETE` in a `usp_Get*` proc.
+- Escape `%`, `_` and `[` before any user text goes into a `LIKE` pattern.
+- Proc name `dbo.usp_Get<Noun>By<Filter>`. One proc per SOAP operation.
+- tSQLt tests live in `db/tests/<ProcName>/`. Create fixtures inside the test (tSQLt rolls back) and prefix any object you create with `tsqlt_`.

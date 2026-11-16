@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mssql-readonly": {
+      "command": "node",
+      "args": ["./tools/mcp/mssql-readonly/server.js"],
+      "env": {
+        "MSSQL_CONNECTION_STRING": "${env:MSSQL_CONNECTION_STRING}",
+        "MSSQL_ALLOWED_SCHEMAS": "INFORMATION_SCHEMA,dbo"
+      }
+    }
+  }
+}

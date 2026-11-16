@@ -1,0 +1,14 @@
+---
+description: Rules for changing WCF service contracts and DTOs so existing consumers do not break
+globs: src/FS.Soap.Contracts/**/*.cs,src/FS.Soap.Services/**/*.cs
+alwaysApply: false
+---
+
+# SOAP contract rules
+
+- Additive only. Do not rename, remove, retype or re-order members of an existing `[DataContract]`. Do not change an existing `[OperationContract]` signature.
+- A new capability is a new operation with its own request and response DTOs.
+- Every `[DataMember]` sets `Order` and `IsRequired` explicitly. New members on existing DTOs would have to be optional; prefer a new DTO.
+- Validation failures throw `FaultException<ValidationFault>` with a stable `Code` (for example `InvalidMake`). Never return a partial result with a message string.
+- Do not log request payloads that contain party addresses. Log operation name, row count and elapsed time.
+- After any contract change, regenerate `tests/FS.Soap.Tests/Snapshots/service.wsdl` and review the diff. The WSDL snapshot test must pass in the same PR.
